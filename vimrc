@@ -1,4 +1,3 @@
-" vim: tabstop=2 shiftwidth=2 expandtab
 set nocompatible
 
 " vim-plug install
@@ -10,27 +9,26 @@ endif
 
 call plug#begin('~/.vim/plugged')
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'scrooloose/nerdcommenter'
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/vim-peekaboo'
 Plug 'junegunn/vim-slash'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-endwise'
 Plug 'altercation/vim-colors-solarized'
 Plug 'farmergreg/vim-lastplace'
 Plug 'mhinz/vim-signify'
 Plug 'mhinz/vim-startify'
 Plug 'easymotion/vim-easymotion'
 Plug 'vim-scripts/camelcasemotion'
+Plug 'vim-scripts/bufkill.vim'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'enricobacis/vim-airline-clock'
 Plug 'Yggdroot/indentLine'
-Plug 'scrooloose/nerdcommenter'
 Plug 'itchyny/vim-cursorword'
 Plug 'AndrewRadev/splitjoin.vim'
-Plug 'tpope/vim-endwise'
 Plug 'jiangmiao/auto-pairs'
-Plug 'vim-scripts/bufkill.vim'
 Plug 'powerman/vim-plugin-ruscmd'
 Plug 'w0rp/ale'
 
@@ -50,8 +48,8 @@ Plug 'slime-lang/vim-slime-syntax'
 
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-buffer.vim'
-Plug 'yami-beta/asyncomplete-omni.vim'
 Plug 'prabirshrestha/asyncomplete-file.vim'
+Plug 'yami-beta/asyncomplete-omni.vim'
 
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
@@ -319,9 +317,20 @@ let g:ale_fixers.elixir = ['mix_format']
 
 " autocomplete via asyncomplete
 set completeopt=menu,menuone,noinsert,noselect
-inoremap <expr> J pumvisible() ? "\<C-n>" : "J"
-inoremap <expr> K pumvisible() ? "\<C-p>" : "K"
-inoremap <expr> <TAB> pumvisible() ? "\<C-y>" : "\<CR>"
+inoremap <silent><expr> J pumvisible() ? "\<C-n>" : "J"
+inoremap <silent><expr> K pumvisible() ? "\<C-p>" : "K"
+
+function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <TAB>
+  \ pumvisible() ? "\<C-y>" :
+  \ <SID>check_back_space() ? "\<TAB>" :
+  \ asyncomplete#force_refresh()
+
+
 let g:asyncomplete_remove_duplicates = 1
 let g:asyncomplete_smart_completion = 0
 
